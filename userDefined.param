@@ -1,0 +1,17 @@
+#### User defined parameters
+npix 		: 120 			# the number of pixels that will be used for perpendicular cuts
+avg_len 	: 12 			# number of skeleton points to average over
+
+# parameters specific to the dataset
+fits_file	: c18o.fits		# blala
+distance	: 388.0			# distance in pc to the source
+pixel_size	: 2.0			# size of 1 pixel in arcsec
+dv		: 0.22			# velocity resolution if the data is PPV
+noise_level	: 0.078			# this is the noise level of the avg intensity profile to calculate reduced chi-sq		
+
+#### parameters of the ALS baseline subtraction
+niter		: 100 			# number of iterations for baseline subtraction
+lam		: 10e5			# lambda for baseline subtraction
+
+#### parameters for finding the minimas
+smooth		: 4			# number of pixels to smooth over

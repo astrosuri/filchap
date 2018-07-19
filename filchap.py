@@ -3,7 +3,7 @@
 #import
 #
 
-#from __future__ import division
+from __future__ import division
 
 import math
 import matplotlib
@@ -369,7 +369,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		if( np.sum(switch) < 1 ):
                 	print "No peak was detected in this slice"
                 	print "Did I go wrong? - Seamus"
-                	return [[0,0,0],0]
+                	#return [[0,0,0],0]
 		
 		n_peaks = np.sum(switch)
         	n_peaks = int(n_peaks)
@@ -489,8 +489,8 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 				print '###########################################################'	
 			
 	
-		#except (UnboundLocalError,RuntimeError,ValueError) as 
-		except IOError as e:
+		except (UnboundLocalError,RuntimeError,ValueError,TypeError) as e: 
+	
 		        print 'I did not fit this.' 
 			pass
 		
@@ -501,7 +501,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
                         break		
 		elif leftover_chunk != 0 and n2 == len(filamentData)-leftover_chunk:
 			n2 += leftover_chunk-1
-		
+			avg_len = leftover_chunk	
 			
 		elif leftover_chunk == 0 and n2 == len(filamentData):
 			break	
@@ -512,7 +512,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 	
 		pl.clf()
 		resultsArray = np.array(resultsList).reshape(-1,32)
-		
+		print resultsArray		
 
 	return resultsArray
 
