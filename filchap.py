@@ -577,6 +577,38 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 
 	return resultsArray
 
+def calculateLength(pathToFilamentCoords):
+
+	pix 		= params["pixel_size"]
+	dist 		= params["distance"] 
+	fits_file	= params["fits_file"]
+	
+	filDat = np.loadtxt(pathToFilamentCoords)
+	
+	length = 0
+	lengthList = []
+
+	for ii in range(len(f)-1):
+		jj = ii + 1
+		x_1 = f[ii,0]
+		y_1 = f[ii,1]
+		x_2 = f[jj,0]
+		y_2 = f[jj,1]
+		delta_x = (x_2 - x_1)**2
+		if delta_x > 100:
+			break
+		delta_y = (y_2 - y_1)**2
+		delta_tot = delta_x + delta_y
+		delta = math.sqrt(delta_tot)
+		theta = (delta*pix)/206265               #convert arcsec to radians.
+		R = theta*dist	
+		length = length + R
+
+	return length		
+		
+
+
+	
 
 def readParameters(param_file):
 	'''
