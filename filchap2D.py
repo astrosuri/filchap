@@ -16,8 +16,7 @@ from baselineSubtraction import baseline_als
 from scipy.ndimage import gaussian_filter
 from scipy.signal import argrelextrema
 from scipy import stats 
-import aplpy
-from astropy.wcs import WCS
+
 import matplotlib.pyplot as plt
 
 import warnings
@@ -28,7 +27,6 @@ matplotlib.rcParams.update({'font.size': 14.})
 matplotlib.rcParams.update({'font.family':'serif'})
 #
 
-#start here
 def gaus(arr,a,mu,sigma):
 	return a*np.exp(-(arr-mu)**2/(2*sigma**2))
 
@@ -40,7 +38,7 @@ def plum4(arr,a0,x0,rflat):
 
 
 def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, printResults):
-	
+        
 	# reading user defined parameters 	
 	npix    	= params["npix"] 
 	avg_len 	= params["avg_len"] 
@@ -49,7 +47,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 	pix 		= params["pixel_size"]
 	dist 		= params["distance"] 
 	fits_file	= params["fits_file"]
-	dv 		= params["dv"]
+	#dv 		= params["dv"]
 	smooth		= params["smooth"]
 	noise_level 	= params["noise_level"]
 	int_thresh 	= params["int_thresh"]
@@ -57,7 +55,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 
 
 	resultsList	= []
-	range_perp	= (np.arange(-npix,npix)*pix*dist/206265) 
+	range_perp	= np.arange(-npix,npix)#(*pix*dist/206265)
   	
  	n = 1
 	n2 = avg_len
@@ -72,26 +70,6 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		
 
 	while True: #n2 <  len(filamentData):	
-		# this is only for testing 
-		fig = pl.figure(figsize=(7,5))
-		ax1 = aplpy.FITSFigure('/home/suri/projects/carmaorion/analysis/disperse/c18o/0.2kms_resolution/han1_mask_imfit_c18o_pix_2_Tmb_noEdges_north_v4.7-13.1.peak.fits', figure=fig)
-		ax1.show_colorscale(cmap='Greys', vmin=-0.5,vmax=10.)
-		ax1.ticks.set_xspacing(0.1)
-		ax1.ticks.show()
-		ax1.ticks.set_color('black')
-	
-		ax1.tick_labels.set_xformat('hh:mm:ss')
-	        ax1.tick_labels.set_yformat('dd:mm')
-			
-		ax1.tick_labels.set_font(size='large', weight='medium', \
-                          stretch='normal', family='serif', \
-                          style='normal', variant='normal')
-				
-		v = [320,680,270,500]
-		pl.axis(v)
-		
-		ax1.add_scalebar(0.01142,'0.1 pc',color='black',linewidth=3.,corner='top left')
-			
 		#print 'n2 :', n2	
 	  	 
 		print ' '
@@ -115,21 +93,22 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 	 		
 			x =filamentData[:,0]
 			y = filamentData[:,1]
-			z = filamentData[:,2]
-			
-			#xWorld, yWorld = w1.wcs_pix2world(x,y,0)
-        		#xPix, yPix = w2.wcs_world2pix(xWorld,yWorld,0)
-			pl.plot(x,y,'.', markersize=8)
-				
+			#z = filamentData[:,2]
+
+			#x = np.array(x,dtype=int)
+			#y = np.array(y,dtype=int)
+			pl.plot(x,y,'ro')
+			pl.grid(True)
+			pl.axis('equal')	
 			x0 = int(x[n])
 			y0 = int(y[n])
-			z0 = int(z[n])
+			#z0 = int(z[n])
 			r0 = np.array([x0,y0], dtype=float) 		# point on the filament
 		
 			#to save the data
 		        x0save = x0
 		        y0save = y0
-		        z0save = z0
+		        #z0save = z0
 
 
 			profileLSum = np.zeros(npix)      
@@ -153,11 +132,11 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			const = np.sum(normal*r0)
 					
 			# defining lists an array to be used below
-			distance = np.zeros_like(intensity[0])
-			distance2 = np.zeros_like(intensity[0])
+			distance = np.zeros_like(intensity)
+			distance2 = np.zeros_like(intensity)
 
-			line_perp = np.zeros_like(intensity[0])
-			line_perp2 = np.zeros_like(intensity[0])		
+			line_perp = np.zeros_like(intensity)
+			line_perp2 = np.zeros_like(intensity)		
 			
 		
 			# Loop 1: if the slope is negative
@@ -172,7 +151,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 						if (distance[ii,jj] <  npix-1):
 							dist_normal=(np.fabs(a*jj+b*ii-const))/(np.sum(normal*normal))**0.5 #distance between point (i,j) and the normal 
 							# take the point if it is in the vicinity of the normal (distance < 2 pix)
-							if (dist_normal < 2):
+							if (dist_normal < 1):
 								line_perp[ii,jj] = distance[ii,jj] #storing the nearby points
 								line_perpList.extend((ii,jj,distance[ii,jj]))
 				for ii in range(y0,y0+npix+1):
@@ -182,7 +161,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		                        	if (distance2[ii,jj] <  npix-1):
 		                                	dist_normal2=(np.fabs(a*jj+b*ii-const))/(np.sum(normal*normal))**0.5 
 		                                	
-		                                	if (dist_normal2 < 2): 
+		                                	if (dist_normal2 < 1): 
 		                                        	line_perp2[ii,jj] = distance2[ii,jj] 
 								line_perpList2.extend((ii,jj,distance2[ii,jj]))			
 		                                        
@@ -198,7 +177,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 						distance[ii,jj]=((jj-x0)**2.+(ii-y0)**2.)**0.5
 						if (distance[ii,jj] <  npix-1):
 							dist_normal=(np.fabs(a*jj+b*ii-const))/(np.sum(normal*normal))**0.5
-							if (dist_normal < 2):
+							if (dist_normal < 1):
 								line_perp[ii,jj] = distance[ii,jj]
 								line_perpList.extend((ii,jj,distance[ii,jj]))
 				for ii in range(y0-npix,y0+1):
@@ -206,7 +185,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 						distance2[ii,jj]=((jj-x0)**2.+(ii-y0)**2.)**0.5
 						if (distance2[ii,jj] <  npix-1):
 							dist_normal2=(np.fabs(a*jj+b*ii-const))/(np.sum(normal*normal))**0.5
-							if (dist_normal2 < 2):
+							if (dist_normal2 < 1):
 								line_perp2[ii,jj] = distance2[ii,jj]
 								line_perpList2.extend((ii,jj,distance2[ii,jj]))
 
@@ -221,17 +200,17 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			perpendicularLine = np.array(line_perpList).reshape(-1,3)
                 	perpendicularLine2 = np.array(line_perpList2).reshape(-1,3)
 				
-			pl.plot(perpendicularLine[:,1],perpendicularLine[:,0],'r.', markersize=0.5, alpha=0.7)
-                        pl.plot(perpendicularLine2[:,1],perpendicularLine2[:,0],'r.', markersize=0.5,alpha=0.7)
-	
-			
+			pl.plot(perpendicularLine[:,1],perpendicularLine[:,0],'g.', markersize=0.5)
+                        pl.plot(perpendicularLine2[:,1],perpendicularLine2[:,0],'g.', markersize=0.5)
+			#print perpendicularLine
+			pl.show()
 			
 			for dd in range(0,npix):
 
 				if (dd == 0):	
 					# this is where the skeleton point is x0,y0,z0
 					# sum the intensities of the velocity channel before and after
-					profileLSum[dd] = np.sum([intensity[z0-1,y0-1,x0-1], intensity[z0,y0-1,x0-1], intensity[z0+1,y0-1,x0-1]]) 
+					profileLSum[dd] = intensity[y0,x0]
 
 				if (dd > 0):
 					# this is where we have to get the list of the perpendicular points
@@ -240,10 +219,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 					# we take the mean intensity and some over 3 channels
 					index_d = np.where((line_perp>dd-1) * (line_perp<=dd))	
 		
-					profileLSum[dd] = np.sum( [np.mean(intensity[int(z0)-1,index_d[0]-1,index_d[1]-1]), \
-							np.mean(intensity[int(z0),index_d[0]-1,index_d[1]-1]), \
-                                                        np.mean(intensity[int(z0)+1,index_d[0]-1,index_d[1]-1])] )
- 
+					profileLSum[dd] = np.mean(intensity[index_d[0],index_d[1]])
 	
 				
 				# it could also be that what the perpendicular got was NaNs
@@ -258,8 +234,8 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 				if (ddd == 0):
 					# this is where the skeleton point is x0,y0,z0
 					# sum the intensities of the velocity channel before and after	                       
-				      	profileRSum[ddd] = np.sum([intensity[z0-1,y0-1,x0-1], intensity[z0,y0-1,x0-1], intensity[z0+1,y0-1,x0-1]]) 
-				
+				      	profileRSum[ddd] = intensity[y0,x0]
+					#profileRSum[ddd] = np.sum([intensity[z0-1,y0-1,x0-1], intensity[z0,y0-1,x0-1], intensity[z0+1,y0-1,x0-1]]) 
 		
 				if (ddd > 0):
 					# this is where we have to get the list of the perpendicular points
@@ -268,9 +244,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 					# we take the mean intensity and some over 3 channels
 					index_d2 = np.where((line_perp2>ddd-1) * (line_perp2<=ddd))		
 	
-					profileRSum[ddd] = np.sum( [np.mean(intensity[int(z0)-1,index_d2[0]-1,index_d2[1]-1]), \
-							np.mean(intensity[int(z0),index_d2[0]-1,index_d2[1]-1]), \
-							np.mean(intensity[int(z0)+1,index_d2[0]-1,index_d2[1]-1])] )	
+					profileRSum[ddd] = np.mean(intensity[index_d2[0],index_d2[1]])
 			
 				
 				if np.isnan(profileRSum[ddd]) != True:
@@ -281,13 +255,13 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			##############################################################
 		
 			stacked_profile[n] = np.hstack((profileLSum[::-1],profileRSum))
-			stacked_profile[n] = stacked_profile[n]*dv
+			stacked_profile[n] = stacked_profile[n]#*dv
 
-			print stacked_profile[n]
+			#print stacked_profile[n]
 
-		#	plt.figure(1)
-	#		plt.plot(xrange(-npix,0), average_profile[::-1])
-#			plt.plot(xrange(0,npix), average_profile2)
+			plt.figure(1)
+			plt.plot(xrange(-npix,0), average_profile[::-1])
+			plt.plot(xrange(0,npix), average_profile2)
 			
 			#plt.plot(stacked_profile[n])
 			#plt.show()
@@ -297,8 +271,8 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			z = baseline_als(stacked_profile[n], lam, 0.01,niter)
 			stacked_profile_baseSubt[n] = stacked_profile[n] -z	
 			 
-			#if plotIndividualProfiles == True:
-			#	pl.step(range_perp,stacked_profile_baseSubt[n],ls='-',color='#D3D3D3', lw=3.0, alpha=1.0)		
+			if plotIndividualProfiles == True:
+				pl.step(range_perp,stacked_profile_baseSubt[n],ls='-',color='#D3D3D3', lw=3.0, alpha=1.0)		
 			n += 1
 		#####################################################################################
 		# exiting the first loop that allowed us to average a number of intensity profiles ##
@@ -310,12 +284,9 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		# this is the average radial intensity profile we need for the width calculation
 		# so stack together both sides of the profile (- and +)
 		# and multiply with the velocity channel width because it is an integrated intensity profile
-		pl.gcf().subplots_adjust(bottom=0.15)		
-		pl.gcf().subplots_adjust(left=0.15)
-		pl.savefig('/home/suri/development/filchap_1.0/test_c18o_north/plots/slices_f103/widthPlotFil' + str(filamentNo)+'_slice' + str(n2) +'.png', dpi=300)
-				
+		
 		average_profileFull = np.hstack((average_profile[::-1],average_profile2))
-		average_profileFull = average_profileFull*dv
+		#average_profileFull = average_profileFull*dv
 	
 		# subtract baseline from the averaged profile
 		# and also smooth it 
@@ -346,34 +317,34 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		if len(minimaLeft[0]) > 1:
 			
 			b1 = minimaLeft[0][-1]
-			#pl.axvline(x=range_perp[b1], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[b1], ymin=0,ls='--',color='black', alpha=0.5)
 
 		elif len(minimaLeft[0]) == 1:
 			
-			#pl.axvline(x=range_perp[minimaLeft[0][0]], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[minimaLeft[0][0]], ymin=0,ls='--',color='black', alpha=0.5)
 			b1 = minimaLeft[0][0]
 		else:
 
 			b1 = 0
-			#pl.axvline(x=range_perp[b1], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[b1], ymin=0,ls='--',color='black', alpha=0.5)
 
 		if len(minimaRight[0]) > 1:
 
 			b2 = minimaRight[0][0]+npix
-			#pl.axvline(x=range_perp[b2], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[b2], ymin=0,ls='--',color='black', alpha=0.5)
 		
 		
 		elif len(minimaRight[0]) == 1:
-			#pl.axvline(x=range_perp[minimaRight[0][0]+npix], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[minimaRight[0][0]+npix], ymin=0,ls='--',color='black', alpha=0.5)
 		        b2 = minimaRight[0][0]+npix
 
 		else:	
 		        b2 = 2*npix
-			#pl.axvline(x=range_perp[b2-1], ymin=0,ls='--',color='black', alpha=0.5)
+			pl.axvline(x=range_perp[b2-1], ymin=0,ls='--',color='black', alpha=0.5)
 
-	
+		plt.show()
 		# plot the averaged profile
-		#pl.step(range_perp,y_base_subt,'k-', lw=2.0, alpha=1.0)
+		###pl.step(range_perp,y_base_subt,'k-', lw=2.0, alpha=1.0)
 		
 		# uncomment if you want to plot the smoothed average profile
 		#pl.step(range_perp,y_base_subt_smooth,'g',lw=1.0, alpha=0.4)
@@ -395,7 +366,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
         	maxr 		= np.max(r)
         	dr		= (maxr-minr)/ny
 	
-		limit		= 5*noise_level 		# this is to check peak's significance	
+		limit		= 0.01#5*noise_level 		# this is to check peak's significance	
 		
 		#derivatives
         	dy		= np.zeros_like(ydata)
@@ -448,7 +419,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			
 			#for kk in range(len(shoulder_pos)):
 				
-		#			pl.axvline(x=shoulder_pos[kk], ymin=0, ls='--', lw=1., color='g', alpha=0.5)	
+			#		pl.axvline(x=shoulder_pos[kk], ymin=0, ls='--', lw=1., color='g', alpha=0.5)	
 		else:
 			shoulder_pos    = []
 			print 'I found no shoulders.'
@@ -516,25 +487,26 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 			perr3			= np.sqrt(np.diag(var_matrix3))
 			perr4			= np.sqrt(np.diag(var_matrix4))	
 
-			#pl.plot(range_perp,y_base_subt)
-		#	pl.plot(range_perp,fit,ls='-.', color='#0000CD', lw=1.) 	 
-		#	pl.plot(range_perp,fit3,ls='-',color='#DAA520', lw=1.) 
-		#	pl.plot(range_perp,fit4,ls='--',color='red', lw=1.)	
+			pl.plot(range_perp,y_base_subt)
+			pl.plot(range_perp,fit,ls='-.', color='#0000CD', lw=1.) 	 
+			pl.plot(range_perp,fit3,ls='-',color='#DAA520', lw=1.) 
+			pl.plot(range_perp,fit4,ls='--',color='red', lw=1.)	
 			
-		#	pl.xlabel('Distance from the ridge [pc]')
-		#	pl.ylabel('Integrated Intensity [K.km/s]')	
-		#	pl.grid(True, alpha=0.2)
+			#pl.xlabel('Distance from the ridge [pc]')
+			#pl.ylabel('Integrated Intensity [K.km/s]')
+			#pl.axis('equal')	
+			pl.grid(True)
 			pl.gcf().subplots_adjust(bottom=0.15)		
-			pl.gcf().subplots_adjust(left=0.15)
-			#pl.savefig('/home/suri/development/filchap_1.0/test_c18o_north/plots/slices_f103/widthPlotFil' + str(filamentNo)+'_slice' + str(n2) +'.png', dpi=300)
-			#pl.show()
+			
+			#pl.savefig('/home/suri/development/filchap_1.0/syntheticTest/plots/widthPlotFil' + str(filamentNo)+'_slice' + str(n2) +'.png', dpi=300)
+			pl.show()
 			
 			rangePix = b2-b1
 		 
 			FWHM_plummer2 = 3.464*co_eff3[2]
 			FWHM_plummer4 = 1.533*co_eff4[2]
 			
-			resultsList.extend((co_eff[0],perr[0],co_eff[1],perr[1],co_eff[2]*2.35,perr[2],co_eff3[0],perr3[0],co_eff3[1],perr3[1],FWHM_plummer2,perr3[2],co_eff4[0],perr4[0],co_eff4[1],perr4[1],FWHM_plummer4,perr4[2],FWHM_moments,skewness,kurtosis,chi_sq_gaus,red_chi_sq_gaus,chi_sq_plum2,red_chi_sq_plum2,chi_sq_plum4,red_chi_sq_plum4,rangePix,x0save,y0save,z0save,len(shoulder_pos)))
+			resultsList.extend((co_eff[0],perr[0],co_eff[1],perr[1],co_eff[2]*2.35,perr[2],co_eff3[0],perr3[0],co_eff3[1],perr3[1],FWHM_plummer2,perr3[2],co_eff4[0],perr4[0],co_eff4[1],perr4[1],FWHM_plummer4,perr4[2],FWHM_moments,skewness,kurtosis,chi_sq_gaus,red_chi_sq_gaus,chi_sq_plum2,red_chi_sq_plum2,chi_sq_plum4,red_chi_sq_plum4,rangePix,x0save,y0save,len(shoulder_pos)))
 		
 			if printResults == True:
 				print '###########################################################'
@@ -572,7 +544,7 @@ def calculateWidth(filamentNo,filamentData, params, plotIndividualProfiles, prin
 		 
 	
 		pl.clf()
-		resultsArray = np.array(resultsList).reshape(-1,32)
+		resultsArray = np.array(resultsList).reshape(-1,31)
 		print resultsArray		
 
 	return resultsArray

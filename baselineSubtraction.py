@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 #
-#
-#
+#this algorithm is an application of ALS
+#baseline subtraction method presented in Eilers and Boelens 2005
+#taken from stackoverflow 
+#https://stackoverflow.com/questions/29156532/python-baseline-correction-library/29185844
 ########################
 # import ###############
 ########################
