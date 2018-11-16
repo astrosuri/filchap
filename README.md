@@ -1,7 +1,7 @@
 # Filament Characterization Package
 FILament CHAracterization Package (FilChaP) is a python-based algorithm that can be employed to derive filament properties.
 FilChaP is publicly available through this GitHub page. 
-If you use FilChaP in a publication, please cite Suri et al. 2018 (when this is published of course).
+If you use FilChaP in a publication, please cite Suri et al. 2018.
 
 ## Dependencies 
 
