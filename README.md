@@ -80,10 +80,9 @@ has to adjust this parameter whenever the avg_len is changed.
 ## Contact
 
 Sümeyye Suri <br /> 
-I. Physikalisches Institut, <br /> 
-Universität zu Köln, <br /> 
-Zülpicher Str. 77, <br /> 
-D-50937 Köln, <br /> 
+Max Planck Institute for Astronomy, <br /> 
+Königstuhl 17, <br /> 
+D-69117 Heidelberg, <br /> 
 Germany
 
-suri at ph1.uni-koeln.de
+suri at mpia.de
