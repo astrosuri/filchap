@@ -158,7 +158,7 @@ def calculateWidth(filamentNo,filamentData, filamentLength, params, plotIndividu
 
 		# this is a plotting bit	
 		fig, (ax1, ax2) = plt.subplots(nrows=1, ncols=2, figsize=(9, 4))	
-		#'/home/suri/projects/carmaorion/analysis/disperse/c18o/0.2kms_resolution/han1_mask_imfit_c18o_pix_2_Tmb_noEdges_north_v4.7-13.1.peak.fits')
+
 		fig.subplots_adjust(left=0.11,wspace=0.2, bottom=0.17)	
 		ax1.imshow(peak_intensity, origin=0,interpolation="gaussian", vmax = 14, vmin = 0, extent=[0,peak_intensity.shape[1],0, peak_intensity.shape[0]])
 	
@@ -398,6 +398,8 @@ def calculateWidth(filamentNo,filamentData, filamentLength, params, plotIndividu
 				print kk, len_sep,'//', avg_sep
 				kk += 1
 				n = kk
+				if n > idx:
+					break
 				
 					
 				
@@ -681,6 +683,22 @@ def calculateWidth(filamentNo,filamentData, filamentLength, params, plotIndividu
 		
 	return resultsArray
 
+def calculateLength(filamentData,params):
+	pix             = params["pixel_size"]
+	dist            = params["distance"]
+	length		= 0
+	for ii in range(len(filamentData)-1):
+		x_1 = filamentData[ii,0]
+		y_1 = filamentData[ii,1]
+		x_2 = filamentData[ii+1,0]
+		y_2 = filamentData[ii+1,1]
+		delta_x = (x_2 - x_1)**2
+		delta_y = (y_2 - y_1)**2
+		delta = math.sqrt(delta_x + delta_y)	
+		theta = (delta*pix)/206265               #convert arcsec to radians.
+		R = theta*dist		
+		length = length + R	
+	return length
 
 def readParameters(param_file):
 	'''

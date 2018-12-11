@@ -1,3 +1,30 @@
 FilChaP Tutorial 
 
-Dear user, this tutorial aims at walking you through how to use FilChaP. 
+Dear user, this tutorial aims at walking you through how to use FilChaP.
+The tutorial data provided in this folder is PI proprietary, and cannot be used outside of the purpose of this tutorial.
+
+This folder includes the following files/folders:
+
+-- filament.txt : this is an example filament coordinate file with x (RA in pixels), 
+		y (DEC in pixels) and z (velocity channel) coordinates. This is the exact filament
+		used in Suri et al 2018, Figure 3.
+
+-- tutorial.fits : this is a 3D fits file of the region on which the example filament is identified.
+
+-- tutorial.peak.fits : this is a 2D peak intensity map of the map tutorial.fits. It is used for plotting only.
+
+By running the example script ../RunFilchap.py one calculates filament properties based on the fits files and filament coordinates 
+provided in this directory. The results are saved in:
+
+-- ./plots : this is a directory where the resulting width calculation plots are saved.
+
+-- ./results : this is a directory where the results are saved in text files.
+
+You can visualize your results by using the following script.
+
+-- createPandasDataframe.py : by using this script, you can write the results stored in text file into an hdf5 file.
+				This format is much more easier to use with pandas dataframes.
+
+-- plotResults.py : this script is an example of how the results can be visualizedi using pandas dataframes. 
+
+ 
