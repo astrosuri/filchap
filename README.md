@@ -13,6 +13,8 @@ FilChaP is compatible with python 2.7 and requires the following libraries:
 * Pandas,
 * Scipy.
 
+We are currently working on making the code compatible with Python 3, please look out for new releases!
+
 ## Input & Output files
 
 FilChaP takes in 2D (position-position) or 3D datasets (position-position-velocity) in FITS format,
